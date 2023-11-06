@@ -7,13 +7,32 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model book {
-  id       Int         @id @default(autoincrement())
-  title String      @db.VarChar(99) @unique
-  description    String      @db.Text
+model Recipe {
+  id          Int      @id @default(autoincrement())
+  title       String   @unique @db.VarChar(99)
+  description String   @db.Text
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  user_id Int
+  user    User @relation(fields: [user_id], references: [id])
+
+  @@map("recipes")
 }
 
-// enum user_status {
-//   active
-//   inactive
-// }
+model User {
+  id         Int       @id @default(autoincrement())
+  email      String    @unique @db.VarChar(100)
+  password   String    @db.VarChar(255)
+  role       user_role
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  Recipe     Recipe[]
+
+  @@map("users")
+}
+
+enum user_role {
+  user
+  admin
+}
